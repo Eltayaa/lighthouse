@@ -24,13 +24,13 @@ describe('Runner', () => {
   const saveArtifactsSpy = sinon.spy(assetSaver, 'saveArtifacts');
   const loadArtifactsSpy = sinon.spy(assetSaver, 'loadArtifacts');
   const gatherRunnerRunSpy = sinon.spy(GatherRunner, 'run');
-  const runAuditSpy = sinon.spy(AuditRunner, 'runAudits');
+  const auditRunnerRunSpy = sinon.spy(AuditRunner, 'run');
 
   function resetSpies() {
     saveArtifactsSpy.reset();
     loadArtifactsSpy.reset();
     gatherRunnerRunSpy.reset();
-    runAuditSpy.reset();
+    auditRunnerRunSpy.reset();
   }
 
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('Runner', () => {
         assert.ok(saveArtifactArg.devtoolsLogs.defaultPass.length > 100);
 
         assert.equal(gatherRunnerRunSpy.called, true, 'GatherRunner.run was not called');
-        assert.equal(runAuditSpy.called, false, '_runAudit was called');
+        assert.equal(auditRunnerRunSpy.called, false, '_runAudit was called');
 
         assert.ok(fs.existsSync(resolvedPath));
         assert.ok(fs.existsSync(`${resolvedPath}/artifacts.json`));
@@ -85,7 +85,7 @@ describe('Runner', () => {
         assert.equal(loadArtifactsSpy.called, true, 'loadArtifacts was not called');
         assert.equal(gatherRunnerRunSpy.called, false, 'GatherRunner.run was called');
         assert.equal(saveArtifactsSpy.called, false, 'saveArtifacts was called');
-        assert.equal(runAuditSpy.called, true, '_runAudit was not called');
+        assert.equal(auditRunnerRunSpy.called, true, '_runAudit was not called');
       });
     });
 
@@ -118,7 +118,7 @@ describe('Runner', () => {
         assert.equal(loadArtifactsSpy.called, false, 'loadArtifacts was called');
         assert.equal(gatherRunnerRunSpy.called, true, 'GatherRunner.run was not called');
         assert.equal(saveArtifactsSpy.called, true, 'saveArtifacts was not called');
-        assert.equal(runAuditSpy.called, true, '_runAudit was not called');
+        assert.equal(auditRunnerRunSpy.called, true, '_runAudit was not called');
       });
     });
 
@@ -128,7 +128,7 @@ describe('Runner', () => {
         assert.equal(loadArtifactsSpy.called, false, 'loadArtifacts was called');
         assert.equal(gatherRunnerRunSpy.called, true, 'GatherRunner.run was not called');
         assert.equal(saveArtifactsSpy.called, false, 'saveArtifacts was called');
-        assert.equal(runAuditSpy.called, true, '_runAudit was not called');
+        assert.equal(auditRunnerRunSpy.called, true, '_runAudit was not called');
       });
     });
   });

@@ -391,24 +391,14 @@ class GatherRunner {
   }
 
   /**
+   * @param {string} requestedUrl
    * @param {Array<LH.Config.Pass>} passes
-   * @param {{url: string, settings: LH.Config.Settings, connection: Connection, driverMock?: Driver}} options
+   * @param {{settings: LH.Config.Settings, connection: Connection, driverMock?: Driver}} options
    * @return {Promise<LH.Artifacts>}
    */
-  static async run(passes, options) {
-    let requestedUrl;
-    try {
-      // Use canonicalized URL (with trailing slashes and such)
-      requestedUrl = new URL(options.url).href;
-    } catch (e) {
-      throw new Error('The url provided should have a proper protocol and hostname.');
-    }
-
+  static async run(requestedUrl, passes, options) {
     const driver = options.driverMock || new Driver(options.connection);
     const settings = options.settings;
-
-    /** @type {Partial<GathererResults>} */
-    const gathererResults = {};
 
     try {
       await driver.connect();
@@ -416,6 +406,9 @@ class GatherRunner {
       await GatherRunner.loadBlank(driver);
       baseArtifacts.BenchmarkIndex = await driver.getBenchmarkIndex();
       await GatherRunner.setupDriver(driver, {requestedUrl, settings});
+
+      /** @type {Partial<GathererResults>} */
+      const gathererResults = {};
 
       // Run each pass
       let firstPass = true;
