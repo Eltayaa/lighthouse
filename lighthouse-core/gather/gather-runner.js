@@ -392,11 +392,13 @@ class GatherRunner {
 
   /**
    * @param {string} requestedUrl
-   * @param {Array<LH.Config.Pass>} passes
+   * @param {?Array<LH.Config.Pass>} passes
    * @param {{settings: LH.Config.Settings, connection: Connection, driverMock?: Driver}} options
    * @return {Promise<LH.Artifacts>}
    */
   static async run(requestedUrl, passes, options) {
+    if (!passes) throw new Error('No passes in config to run');
+
     const driver = options.driverMock || new Driver(options.connection);
     const settings = options.settings;
 
