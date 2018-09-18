@@ -151,7 +151,7 @@ describe('Runner', () => {
   });
 
 
-  it.only('rejects when not in gatherMode or given passes in config', () => {
+  it('rejects when not in gatherMode or given passes in config', () => {
     const url = 'https://example.com';
     const config = new Config({
       audits: [
@@ -491,7 +491,7 @@ describe('Runner', () => {
   });
 
   it('can create computed artifacts', () => {
-    const computedArtifacts = AuditRunner.instantiateComputedArtifacts();
+    const computedArtifacts = Runner.instantiateComputedArtifacts();
     assert.ok(Object.keys(computedArtifacts).length, 'there are a few computed artifacts');
     Object.keys(computedArtifacts).forEach(artifactRequest => {
       assert.equal(typeof computedArtifacts[artifactRequest], 'function');

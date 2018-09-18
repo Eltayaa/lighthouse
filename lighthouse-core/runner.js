@@ -198,7 +198,8 @@ class Runner {
 
     /** @type {Array<string>} */
     const auditRunWarnings = [];
-    const auditResults = await AuditRunner.run(config.settings, config.audits, artifacts,
+    const fullArtifacts = Object.assign({}, Runner.instantiateComputedArtifacts(), artifacts);
+    const auditResults = await AuditRunner.run(config.settings, config.audits, fullArtifacts,
         auditRunWarnings);
 
     return {auditResults, auditRunWarnings};
@@ -217,6 +218,25 @@ class Runner {
     if (typeof gatherMode === 'string') return path.resolve(process.cwd(), gatherMode);
 
     return path.join(process.cwd(), 'latest-run');
+  }
+
+  /**
+   * TODO(bckenny): refactor artifact types
+   * @return {LH.ComputedArtifacts}
+   */
+  static instantiateComputedArtifacts() {
+    const computedArtifacts = {};
+    AuditRunner.getComputedGathererList().forEach(function(filename) {
+      // Drop `.js` suffix to keep browserify import happy.
+      filename = filename.replace(/\.js$/, '');
+      const ArtifactClass = require('./gather/computed/' + filename);
+      const artifact = new ArtifactClass(computedArtifacts);
+      // define the request* function that will be exposed on `artifacts`
+      // @ts-ignore - doesn't have an index signature, so can't be set dynamically.
+      computedArtifacts['request' + artifact.name] = artifact.request.bind(artifact);
+    });
+
+    return /** @type {LH.ComputedArtifacts} */ (computedArtifacts);
   }
 }
 

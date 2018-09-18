@@ -13,7 +13,6 @@ const Simulator = require('./dependency-graph/simulator/simulator');
 const lanternTraceSaver = require('./lantern-trace-saver');
 const Metrics = require('./traces/pwmetrics-events');
 const TraceParser = require('./traces/trace-parser');
-const AuditRunner = require('../audit-runner.js');
 const rimraf = require('rimraf');
 const mkdirp = require('mkdirp');
 
@@ -169,7 +168,10 @@ async function prepareAssets(artifacts, audits) {
     const trace = artifacts.traces[passName];
     const devtoolsLog = artifacts.devtoolsLogs[passName];
 
-    const computedArtifacts = AuditRunner.instantiateComputedArtifacts();
+    // Avoid Runner->AssetSaver->Runner circular require by loading Runner here.
+    const Runner = require('../runner.js');
+    const computedArtifacts = Runner.instantiateComputedArtifacts();
+    /** @type {Array<Screenshot>} */
     const screenshots = await computedArtifacts.requestScreenshots(trace);
 
     const traceData = Object.assign({}, trace);

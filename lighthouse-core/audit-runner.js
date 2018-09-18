@@ -23,7 +23,6 @@ class AuditRunner {
    */
   static async run(settings, audits, artifacts, runWarnings) {
     log.log('status', 'Analyzing and running audits...');
-    artifacts = Object.assign({}, AuditRunner.instantiateComputedArtifacts(), artifacts);
 
     // Run each audit sequentially
     const auditResults = [];
@@ -136,25 +135,6 @@ class AuditRunner {
     ];
 
     return fileList.filter(f => /\.js$/.test(f) && !filenamesToSkip.includes(f)).sort();
-  }
-
-  /**
-   * TODO(bckenny): refactor artifact types
-   * @return {LH.ComputedArtifacts}
-   */
-  static instantiateComputedArtifacts() {
-    const computedArtifacts = {};
-    AuditRunner.getComputedGathererList().forEach(function(filename) {
-      // Drop `.js` suffix to keep browserify import happy.
-      filename = filename.replace(/\.js$/, '');
-      const ArtifactClass = require('./gather/computed/' + filename);
-      const artifact = new ArtifactClass(computedArtifacts);
-      // define the request* function that will be exposed on `artifacts`
-      // @ts-ignore - doesn't have an index signature, so can't be set dynamically.
-      computedArtifacts['request' + artifact.name] = artifact.request.bind(artifact);
-    });
-
-    return /** @type {LH.ComputedArtifacts} */ (computedArtifacts);
   }
 
   /**
